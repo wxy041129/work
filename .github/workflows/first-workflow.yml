@@ -1,0 +1,42 @@
+name: First CI/CD Pipeline # 工作流名称
+
+# 触发条件：这里指定在推送到 main 或 master 分支时触发
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # 允许手动在 Actions 页面点击按钮触发
+
+jobs:
+  build-job:
+    runs-on: ubuntu-latest # 指定运行环境，等同于 GitLab 的 Runner 标签
+    steps:
+      - name: Run build script
+        # ${{ github.actor }} 是 GitHub 的上下文变量，对应 $GITLAB_USER_LOGIN
+        run: echo "Hello, ${{ github.actor }}!"
+
+  test-job1:
+    needs: build-job # 依赖 build-job，确保顺序执行（模拟 GitLab 的 stage 顺序）
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run test script
+        run: echo "This job tests something"
+
+  test-job2:
+    needs: build-job # 同样依赖 build-job，test-job1 和 test-job2 将并行运行
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run longer test script
+        run: |
+          echo "This job tests something, but takes more time than test-job1."
+          echo "After the echo commands complete, it runs the sleep command for 20 seconds"
+          echo "which simulates a test that runs 20 seconds longer than test-job1"
+          sleep 20
+
+  deploy-prod:
+    needs: [test-job1, test-job2] # 只有当两个测试作业都成功后才运行
+    runs-on: ubuntu-latest
+    environment: production # GitHub 的环境部署功能
+    steps:
+      - name: Deploy script
+        # ${{ github.ref_name }} 对应 $CI_COMMIT_BRANCH
+        run: echo "This job deploys something from the ${{ github.ref_name }} branch."
