@@ -1,0 +1,8 @@
+{
+  "name": "ci-cd-practice",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "dependencies": {}
+}
