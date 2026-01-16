@@ -57,4 +57,6 @@ jobs:
           context: .
           push: true
           # 注意：镜像名称必须全部小写
-          tags: ghcr.io/${{ github.repository_owner }}/ci-cd-practice:latest
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/ci-cd-practice:latest
+            ghcr.io/${{ github.repository_owner }}/ci-cd-practice:${{ github.sha }}
